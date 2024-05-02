@@ -1,5 +1,8 @@
 #include "scene.hpp"
 
+#include "terrain.hpp"
+#include "worm.hpp"
+
 using namespace cgp;
 
 // This function is called only once at the beginning of the program
@@ -19,18 +22,23 @@ void scene_structure::initialize() {
     display_info();
 
     // Create the global (x,y,z) frame
-    global_frame.initialize_data_on_gpu(mesh_primitive_frame());
+    // global_frame.initialize_data_on_gpu(mesh_primitive_frame());
 
     // Create the shapes seen in the 3D scene
     // ********************************************** //
 
-    // Defining the ground which is a quadrangle
-    float L_ground = 3.0f;
-    float z_ground = -0.51f;
-    mesh ground_mesh = mesh_primitive_quadrangle(
-        {-L_ground, -L_ground, z_ground}, {L_ground, -L_ground, z_ground},
-        {L_ground, L_ground, z_ground}, {-L_ground, L_ground, z_ground});
-    ground.initialize_data_on_gpu(ground_mesh);
+    // Terrain : the dunes
+    float terrain_size = 200; // scaling factor
+    float uv_range = 3;       // used for repetition of the texture
+    terrain_mesh = create_terrain_mesh(uv_range);
+    terrain.initialize_data_on_gpu(terrain_mesh);
+    terrain.model.set_scaling(terrain_size);
+    terrain.texture.load_and_initialize_texture_2d_on_gpu(
+        project::path + "assets/sand.jpg", GL_REPEAT, GL_REPEAT);
+    // Light settings - colors are handled by initialize_terrain
+    terrain.material.phong.specular = 0;
+    terrain.material.phong.diffuse = 0.8f;
+    terrain.material.phong.ambient = 0.6f;
 
     // Default FOV
     camera_projection.field_of_view = Pi / 2.0f;
@@ -41,30 +49,25 @@ void scene_structure::initialize() {
                        project::path + "shaders/mesh/mesh.frag.glsl");
 }
 
-// This function is called permanently at every new frame
-// Note that you should avoid having costly computation and large allocation
-// defined there. This function is mostly used to call the draw() functions on
-// pre-existing data.
+/*
+This function is called permanently at every new frame
+Note that you should avoid having costly computation and large allocation
+defined there. This function is mostly used to call the draw() functions on
+pre-existing data.
+*/
 void scene_structure::display_frame() {
-    // Messing with the Z-Buffer
-    // glDisable(GL_DEPTH_TEST);
-
     // Set the light to the current position of the camera
     environment.light = camera_control.camera_model.position();
 
-    // Update time
+    // Updating variables
     timer.update();
 
     // Passing uniform variables to shaders
     environment.uniform_generic.uniform_float["time"] = timer.t;
 
     // Drawing objects
-    draw(ground, environment);
-
-    // Drawing wireframes
-    if (gui.display_wireframe) {
-        draw_wireframe(ground, environment);
-    }
+    draw(terrain, environment);
+    draw(worm, environment);
 
     // conditional display of the global frame (set via the GUI)
     if (gui.display_frame)
