@@ -2,45 +2,31 @@
 
 ## Install
 
-By default, if you use HTTPS :
-
-```shell
-git clone --recurse-submodules https://github.com/remigerme/dune-modelling.git
-```
-
-Or if you use SSH (use HTTPS if you don't know what it is) :
+Please use SSH to clone this repository :
 
 ```shell
 git clone --recurse-submodules git@github.com:remigerme/dune-modelling.git
 ```
 
-## Setup
+Make sure you have [cmake](https://cmake.org/download/) installed on your machine (and all libs required by cgp such as `libglfw3` and stuff).
 
-Run this command once :
+## Setup and run (using VSCode)
+
+If you're using Linux, there is no setup. Just debug with the `Debug project with new files` configuration.
+
+If you're using macOS, you need to replace `gdb` by `lldb` in `.vscode/launch.json`. Then debug.
+
+## Setup and run (without VSCode)
+
+Everytime you create a new file (and so the first time too), run this command - **inside the `build` directory** :
 
 ```shell
-mkdir -p build && cd build && cmake ..
+cmake ..
 ```
 
-If the command fails, make sure you have [cmake](https://cmake.org/download/) installed on your machine.
-
-## Run
-
-Everytime you want to compile run this command inside the `build` directory :
+To compile and run the project, use this command - still inside the `build` directory :
 
 ```shell
 make -j8
 ./dune-modelling
-```
-
-Or if your terminal is located in the root directory of the project :
-
-```shell
-cd build && make -j8 && ./dune-modelling
-```
-
-If you create a new `.hpp` or `.cpp` file you need to run cmake again, so inside the `build` directory :
-
-```shell
-cmake ..
 ```
