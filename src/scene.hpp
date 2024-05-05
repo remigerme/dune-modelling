@@ -36,8 +36,8 @@ struct scene_structure : cgp::scene_inputs_generic {
     /************************************/
 
     timer_basic timer;
-    mesh terrain_mesh;
-    mesh_drawable terrain;
+    mesh_drawable ground;
+    mesh_drawable cliff;
     mesh_drawable worm;
 
     /*************/

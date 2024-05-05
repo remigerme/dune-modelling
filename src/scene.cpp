@@ -27,18 +27,24 @@ void scene_structure::initialize() {
     // Create the shapes seen in the 3D scene
     // ********************************************** //
 
-    // Terrain : the dunes
-    float terrain_size = 200; // scaling factor
-    float uv_range = 3;       // used for repetition of the texture
-    terrain_mesh = create_terrain_mesh(uv_range);
-    terrain.initialize_data_on_gpu(terrain_mesh);
-    terrain.model.set_scaling(terrain_size);
-    terrain.texture.load_and_initialize_texture_2d_on_gpu(
+    // Terrain : the ground (dunes)
+    float ground_size = 500; // scaling factor
+    float uv_range = 3;      // used for repetition of the texture
+    mesh ground_mesh = create_ground_mesh(uv_range);
+    ground.initialize_data_on_gpu(ground_mesh);
+    ground.model.set_scaling(ground_size);
+    ground.texture.load_and_initialize_texture_2d_on_gpu(
         project::path + "assets/sand.jpg", GL_REPEAT, GL_REPEAT);
-    // Light settings - colors are handled by initialize_terrain
-    terrain.material.phong.specular = 0;
-    terrain.material.phong.diffuse = 0.8f;
-    terrain.material.phong.ambient = 0.6f;
+    // Light settings - colors are handled by initialize_ground
+    ground.material.phong.specular = 0;
+    ground.material.phong.diffuse = 0.8f;
+    ground.material.phong.ambient = 0.6f;
+
+    // Terrain : the surrounding cliff
+    mesh cliff_mesh = create_cliff_mesh();
+    cliff.initialize_data_on_gpu(cliff_mesh);
+    cliff.model.set_scaling(ground_size);
+    cliff.material.color = {0, 1, 0};
 
     // Default FOV
     camera_projection.field_of_view = Pi / 2.0f;
@@ -66,7 +72,8 @@ void scene_structure::display_frame() {
     environment.uniform_generic.uniform_float["time"] = timer.t;
 
     // Drawing objects
-    draw(terrain, environment);
+    draw(ground, environment);
+    draw(cliff, environment);
     draw(worm, environment);
 
     // conditional display of the global frame (set via the GUI)
