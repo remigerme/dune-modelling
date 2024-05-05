@@ -1,0 +1,44 @@
+{
+    "version": "0.2",
+    "configurations": [
+        {
+            "name": "Debug project",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/dune-modelling",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "externalConsole": false,
+            "MIMode": "gdb", // lldb for macos
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "Build project"
+        },
+        {
+            "name": "Debug project with new files",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/dune-modelling",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "externalConsole": false,
+            "MIMode": "gdb", // gdb for macos
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "Build project with new files"
+        }
+    ]
+}
+
