@@ -8,11 +8,7 @@ float compute_cliff_height(float u, float v, perlin_noise_parameters p) {
     float u_ctrd = u - 0.5;
     float v_ctrd = v - 0.5;
     float r = sqrt(u_ctrd * u_ctrd + v_ctrd * v_ctrd);
-    assert(1 - r > 0);
-    std::cout << "u_ctrd : " << u_ctrd << " v_ctrd : " << v_ctrd << "    ";
-    std::cout << "1 - r : " << 1 - r
-              << "    z : " << exp(-10 * std::abs(0.2 - r)) << std::endl;
-    return p_noise * p.height * exp(-10 * (1 - r));
+    return p_noise * p.height * exp(-5 * (0.4 - r));
 }
 
 void initialize_cliff(mesh &cliff, perlin_noise_parameters parameters) {
@@ -33,13 +29,26 @@ void initialize_cliff(mesh &cliff, perlin_noise_parameters parameters) {
     }
 }
 
-mesh create_cliff_mesh() {
+mesh create_cliff_mesh(float uv_range) {
     int const cliff_samples = 300;
     mesh cliff_mesh =
         mesh_primitive_grid({-1, -1, 0}, {1, -1, 0}, {1, 1, 0}, {-1, 1, 0},
                             cliff_samples, cliff_samples);
 
-    perlin_noise_parameters p = {0.35f, 2.5f, 3, 50};
+    // To allow the texture to repeat on a single grid
+    // We change (u, v) from [0,1] to [0, uv_range]
+    for (int ku = 0; ku < cliff_samples; ku++) {
+        for (int kv = 0; kv < cliff_samples; kv++) {
+            int const idx = ku * cliff_samples + kv;
+            float u = ku / (cliff_samples - 1.0f);
+            float v = kv / (cliff_samples - 1.0f);
+            u *= uv_range;
+            v *= uv_range;
+            cliff_mesh.uv[idx] = {u, v};
+        }
+    }
+
+    perlin_noise_parameters p = {0.35f, 2.5f, 3, 1};
     initialize_cliff(cliff_mesh, p);
 
     return cliff_mesh;
