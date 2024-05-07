@@ -39,6 +39,7 @@ struct scene_structure : cgp::scene_inputs_generic {
     mesh_drawable ground;
     mesh_drawable cliff;
     mesh_drawable worm;
+    cgp::hierarchy_mesh_drawable marteleur;
 
     /*************/
     /* Functions */
