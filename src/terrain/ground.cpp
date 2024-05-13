@@ -7,7 +7,11 @@ float compute_noise(float u, float v, perlin_noise_parameters parameters) {
     // Initial Perloin noise
     float p_noise = noise_perlin({u, v}, parameters.octave,
                                  parameters.persistency, parameters.frequency);
-    float noise = p_noise;
+
+    // We add dune profile
+    float d = sin(4 * M_PI * (u + v)) / 3;
+    float noise = p_noise * d;
+
     return noise;
 }
 
@@ -55,7 +59,7 @@ mesh create_ground_mesh(float uv_range) {
         }
     }
 
-    perlin_noise_parameters p = {0.35f, 2.5f, 3, 0.35f};
+    perlin_noise_parameters p = {0.35f, 3.5f, 3, 0.35f};
     initialize_ground(ground_mesh, p);
 
     return ground_mesh;
