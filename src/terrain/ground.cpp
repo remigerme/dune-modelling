@@ -8,9 +8,13 @@ float compute_noise(float u, float v, perlin_noise_parameters parameters) {
     float p_noise = noise_perlin({u, v}, parameters.octave,
                                  parameters.persistency, parameters.frequency);
 
+    // We rescale coordinates for custom dune profil
+    float us = 7 * u - 1;
+    float vs = 7 * v - 1;
+
     // We add dune profile
-    float d = sin(4 * M_PI * (u + v)) / 3;
-    float noise = p_noise * d;
+    float d = sin(us + vs + us * vs) / (1 + std::abs(us + vs));
+    float noise = (p_noise + d) / 2;
 
     return noise;
 }
@@ -35,7 +39,7 @@ void initialize_ground(mesh &ground, perlin_noise_parameters parameters) {
 
             // use also the noise as color value
             ground.color[idx] =
-                0.2f * vec3(1, 0.6f, 0) + 0.8f * noise * vec3(1, 0.8f, 0);
+                0.3f * vec3(1, 0.55f, 0) + 0.7f * noise * vec3(1, 0.85f, 0);
         }
     }
 }
