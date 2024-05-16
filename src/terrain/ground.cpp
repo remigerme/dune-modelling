@@ -1,5 +1,7 @@
 #include "ground.hpp"
+
 #include "../noise/perlin.hpp"
+#include "environment.hpp"
 
 using namespace cgp;
 
@@ -63,8 +65,23 @@ mesh create_ground_mesh(float uv_range) {
         }
     }
 
+    // Manually set perlin noise
     perlin_noise_parameters p = {0.35f, 3.5f, 3, 0.35f};
     initialize_ground(ground_mesh, p);
 
     return ground_mesh;
 }
+
+Ground::Ground(float ground_size, float uv_range) {
+    ground_mesh = create_ground_mesh(uv_range);
+    ground_drawable.initialize_data_on_gpu(ground_mesh);
+    ground_drawable.model.set_scaling(ground_size);
+    ground_drawable.texture.load_and_initialize_texture_2d_on_gpu(
+        project::path + "assets/sand.jpg", GL_REPEAT, GL_REPEAT);
+    // Light settings - colors are handled by initialize_ground_drawable
+    ground_drawable.material.phong.specular = 0;
+    ground_drawable.material.phong.diffuse = 0;
+    ground_drawable.material.phong.ambient = 1.5f;
+}
+
+Ground::Ground() : Ground(1, 1) {}
