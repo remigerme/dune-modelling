@@ -1,9 +1,5 @@
 #include "scene.hpp"
 
-#include "marteleur.hpp"
-#include "terrain.hpp"
-#include "worm.hpp"
-
 using namespace cgp;
 
 float max(float a, float b) {
@@ -36,23 +32,16 @@ void scene_structure::initialize() {
     // ********************************************** //
 
     // Terrain : the ground (dunes)
-    float ground_size = 50; // scaling factor
-    float uv_range = 3;     // used for repetition of the texture
-    mesh ground_mesh = create_ground_mesh(uv_range);
-    ground.initialize_data_on_gpu(ground_mesh);
-    ground.model.set_scaling(ground_size);
-    ground.texture.load_and_initialize_texture_2d_on_gpu(
-        project::path + "assets/sand.jpg", GL_REPEAT, GL_REPEAT);
-    // Light settings - colors are handled by initialize_ground
-    ground.material.phong.specular = 0;
-    ground.material.phong.diffuse = 0.8f;
-    ground.material.phong.ambient = 0.6f;
+    vec3 ground_scale = 200 * vec3{1, 1, 1}; // scaling factor
+    float ground_uv_range = 3; // used for repetition of the texture
+    ground = Ground(ground_scale, ground_uv_range);
 
     // Terrain : the surrounding cliff
-    mesh cliff_mesh = create_cliff_mesh();
-    cliff.initialize_data_on_gpu(cliff_mesh);
-    cliff.model.set_scaling(ground_size);
-    cliff.material.color = {0, 1, 0};
+    vec3 cliff_scale = vec3{200, 200, 250}; // scaling factor
+    float cliff_uv_range = 30; // used for repetition of the texture
+    cliff = Cliff(cliff_scale, cliff_uv_range);
+    // To be sure to be below the dunes
+    cliff.cliff_drawable.model.set_translation({0, 0, -100});
 
     // Default FOV
     camera_projection.field_of_view = Pi / 2.0f;
@@ -62,63 +51,9 @@ void scene_structure::initialize() {
     shader_marteleur.load(
         project::path + "shaders/shading_marteleur/shading_marteleur.vert.glsl",
         project::path + "shaders/mesh/mesh.frag.glsl");
-    ground.shader = shader_marteleur;
+    // ground.shader = shader_marteleur;
 
-    // Create the hierarchy
-    // ************************************ //
-
-    // Initialize the temporary mesh_drawable that will be inserted in the
-    // hierarchy
-    mesh_drawable tube_central;
-    mesh_drawable corrole;
-    mesh_drawable disc1;
-    mesh_drawable disc2;
-    mesh_drawable bas;
-    mesh_drawable haut;
-    mesh_drawable tete;
-    mesh_drawable cone_bas;
-    mesh_drawable pas_de_vis;
-    mesh_drawable disc3;
-    mesh_drawable pas_bas;
-
-    // Create the geometry of the meshes
-
-    tube_central.initialize_data_on_gpu(
-        mesh_primitive_cylinder(0.05f, {0, 0, 0}, {0, 0, 1.5}));
-    corrole.initialize_data_on_gpu(
-        mesh_primitive_cylinder(0.3f, {0, 0, 0}, {0, 0, 0.05}));
-    disc1.initialize_data_on_gpu(mesh_primitive_disc(0.3f));
-    disc2.initialize_data_on_gpu(mesh_primitive_disc(0.3f));
-    bas.initialize_data_on_gpu(
-        mesh_primitive_conetronqued(0.21, 0, 0.25, 0.25));
-    haut.initialize_data_on_gpu(
-        mesh_primitive_conetronqued(0.25, 0, 0.21, 0.55));
-    tete.initialize_data_on_gpu(
-        mesh_primitive_ellipsoid({0.21, 0.21, 0.21}, {0, 0, 0}));
-    cone_bas.initialize_data_on_gpu(
-        mesh_primitive_conetronqued(0.15, 0, 0.21, 0.1));
-    pas_de_vis.initialize_data_on_gpu(
-        mesh_primitive_cylinder(0.15, {0, 0, 0}, {0, 0, 0.15}));
-    disc3.initialize_data_on_gpu(mesh_primitive_disc(0.25f));
-    pas_bas.initialize_data_on_gpu(
-        mesh_primitive_conetronqued(0.05, 0, 0.15, 0.05));
-
-    // Set the color of some elements
-    haut.material.color = {1.0f, 0.5f, 0.1f};
-
-    // Add the elements in the hierarchy
-
-    marteleur.add(tube_central, "tube_central");
-    marteleur.add(corrole, "corrole", "tube_central", {0, 0, 1});
-    marteleur.add(disc1, "disc1", "corrole", {0, 0, 0.05});
-    marteleur.add(disc2, "disc2", "corrole", {0, 0, 0});
-    marteleur.add(bas, "bas", "tube_central", {0, 0, 0.75});
-    marteleur.add(haut, "haut", "tube_central", {0, 0, 1});
-    marteleur.add(tete, "tete", "haut", {0, 0, 0.55});
-    marteleur.add(disc3, "disc3", "haut", {0, 0, 0});
-    marteleur.add(cone_bas, "cone_bas", "tube_central", {0, 0, 0.65});
-    marteleur.add(pas_de_vis, "pas_de_vis", "tube_central", {0, 0, 0.50});
-    marteleur.add(pas_bas, "pas_bas", "tube_central", {0, 0, 0.45});
+    marteleur = Marteleur(1);
 }
 
 /*
@@ -136,23 +71,23 @@ void scene_structure::display_frame() {
     float X = 0;
     float Y = 0;
 
-    marteleur["haut"].transform_local.translation = {
+    marteleur.marteleur["haut"].transform_local.translation = {
         0, 0, 0.85 + max(0.15, 0.4 * cos(timer.t) * cos(timer.t))};
     // float hauteur = evaluate_terrain_height(0, 0);
-    marteleur["tube_central"].transform_local.translation = {
+    marteleur.marteleur["tube_central"].transform_local.translation = {
         X, Y, 0}; // en vrai, mettre terrain_height
 
     // Passing uniform variables to shaders
-    marteleur.update_local_to_global_coordinates();
+    marteleur.marteleur.update_local_to_global_coordinates();
     environment.uniform_generic.uniform_float["time"] = timer.t;
     environment.uniform_generic.uniform_float["X"] = X;
     environment.uniform_generic.uniform_float["Y"] = Y;
 
     // Drawing objects
-    draw(ground, environment);
-    draw(cliff, environment);
+    draw(ground.ground_drawable, environment);
+    draw(cliff.cliff_drawable, environment);
     draw(worm, environment);
-    draw(marteleur, environment);
+    draw(marteleur.marteleur, environment);
 
     // conditional display of the global frame (set via the GUI)
     if (gui.display_frame)
@@ -162,8 +97,10 @@ void scene_structure::display_frame() {
 void scene_structure::display_gui() {
     ImGui::Checkbox("Frame", &gui.display_frame);
     ImGui::Checkbox("Wireframe", &gui.display_wireframe);
-    ImGui::SliderFloat("FOV", &camera_projection.field_of_view,
-                       10.0f * Pi / 180.0f, 150.0f * Pi / 180.0f);
+    ImGui::SliderFloat("Ambient", &cliff.cliff_drawable.material.phong.ambient,
+                       0, 5);
+    ImGui::SliderFloat("Diffuse", &cliff.cliff_drawable.material.phong.diffuse,
+                       0, 5);
 }
 
 void scene_structure::mouse_move_event() {

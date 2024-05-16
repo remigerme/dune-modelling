@@ -2,6 +2,8 @@
 
 #include "cgp/cgp.hpp"
 #include "environment.hpp"
+#include "objects.hpp"
+#include "terrain.hpp"
 
 using cgp::mesh;
 using cgp::mesh_drawable;
@@ -36,10 +38,10 @@ struct scene_structure : cgp::scene_inputs_generic {
     /************************************/
 
     timer_basic timer;
-    mesh_drawable ground;
-    mesh_drawable cliff;
+    Ground ground;
+    Cliff cliff;
+    Marteleur marteleur;
     mesh_drawable worm;
-    cgp::hierarchy_mesh_drawable marteleur;
 
     /*************/
     /* Functions */
