@@ -72,10 +72,11 @@ mesh create_ground_mesh(float uv_range) {
     return ground_mesh;
 }
 
-Ground::Ground(float ground_size, float uv_range) {
+Ground::Ground(vec3 ground_scale, float uv_range) {
+    this->ground_scale = ground_scale;
     ground_mesh = create_ground_mesh(uv_range);
     ground_drawable.initialize_data_on_gpu(ground_mesh);
-    ground_drawable.model.set_scaling(ground_size);
+    ground_drawable.model.set_scaling_xyz(ground_scale);
     ground_drawable.texture.load_and_initialize_texture_2d_on_gpu(
         project::path + "assets/sand.jpg", GL_REPEAT, GL_REPEAT);
     // Light settings - colors are handled by initialize_ground_drawable
@@ -84,4 +85,4 @@ Ground::Ground(float ground_size, float uv_range) {
     ground_drawable.material.phong.ambient = 1.5f;
 }
 
-Ground::Ground() : Ground(1, 1) {}
+Ground::Ground() {}
