@@ -51,8 +51,6 @@ void initialize_cliff(mesh &cliff, perlin_noise_parameters parameters) {
 
             float lambda = 7 * height / (4 + 3 * 2);
 
-            std::cout << lambda << std::endl;
-
             cliff.color[idx] = (1 - lambda) * light + lambda * dark;
         }
     }
