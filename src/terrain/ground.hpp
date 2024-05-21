@@ -10,6 +10,7 @@ struct Ground {
     vec3 ground_scale;
     mesh ground_mesh;
     mesh_drawable ground_drawable;
+    mesh_drawable dust;
 
     // Initialize the mesh of the ground and the mesh_drawable
     // We scale the mesh_drawable by ground_scale
