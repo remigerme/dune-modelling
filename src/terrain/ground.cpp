@@ -1,7 +1,6 @@
 #include "ground.hpp"
 
 #include "../noise/perlin.hpp"
-#include "environment.hpp"
 
 using namespace cgp;
 
@@ -100,3 +99,24 @@ Ground::Ground(vec3 ground_scale, float uv_range) {
 }
 
 Ground::Ground() {}
+
+void Ground::display(environment_structure environment) {
+    draw(ground_drawable, environment);
+
+    // Enable use of alpha component as color blending for transparent elements
+    //  alpha = current_color.alpha
+    //  new color = previous_color * alpha + current_color * (1-alpha)
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // Disable depth buffer writing
+    //  - Transparent elements cannot use depth buffer
+    //  - They are supposed to be display from furest to nearest elements
+    glDepthMask(false);
+
+    draw(dust, environment);
+
+    // Don't forget to re-activate the depth-buffer write
+    glDepthMask(true);
+    glDisable(GL_BLEND);
+}

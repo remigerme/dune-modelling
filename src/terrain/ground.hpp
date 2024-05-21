@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgp/cgp.hpp"
+#include "environment.hpp"
 
 using cgp::mesh;
 using cgp::mesh_drawable;
@@ -23,4 +24,6 @@ struct Ground {
     // else is called before some initialization stuff
     // in cgp and segfault yeepee
     Ground();
+
+    void display(environment_structure environement);
 };
