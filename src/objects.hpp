@@ -5,3 +5,4 @@
 
 #include "objects/marteleur.hpp"
 #include "objects/worm.hpp"
+#include "objects/worm_dust.hpp"

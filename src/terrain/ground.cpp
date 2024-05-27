@@ -1,7 +1,6 @@
 #include "ground.hpp"
 
 #include "../noise/perlin.hpp"
-#include "environment.hpp"
 
 using namespace cgp;
 
@@ -83,6 +82,41 @@ Ground::Ground(vec3 ground_scale, float uv_range) {
     ground_drawable.material.phong.specular = 0;
     ground_drawable.material.phong.diffuse = 0;
     ground_drawable.material.phong.ambient = 1.5f;
+
+    dust.initialize_data_on_gpu(ground_mesh);
+    dust.model.set_scaling_xyz(ground_scale);
+    dust.model.set_translation({0, 0, 0.1f});
+    dust.texture.load_and_initialize_texture_2d_on_gpu(
+        project::path + "assets/sand.jpg", GL_REPEAT, GL_REPEAT);
+    dust.material.alpha = 0.3f;
+    dust.material.phong.specular = 0;
+    dust.material.phong.diffuse = 0;
+    dust.material.phong.ambient = 1.5f;
+    opengl_shader_structure dust_shader;
+    dust_shader.load(project::path + "shaders/shading_ground/dust.vert.glsl",
+                     project::path + "shaders/shading_ground/dust.frag.glsl");
+    dust.shader = dust_shader;
 }
 
 Ground::Ground() {}
+
+void Ground::display(environment_structure environment) {
+    draw(ground_drawable, environment);
+
+    // Enable use of alpha component as color blending for transparent elements
+    //  alpha = current_color.alpha
+    //  new color = previous_color * alpha + current_color * (1-alpha)
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // Disable depth buffer writing
+    //  - Transparent elements cannot use depth buffer
+    //  - They are supposed to be display from furest to nearest elements
+    glDepthMask(false);
+
+    draw(dust, environment);
+
+    // Don't forget to re-activate the depth-buffer write
+    glDepthMask(true);
+    glDisable(GL_BLEND);
+}

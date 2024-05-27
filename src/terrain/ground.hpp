@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgp/cgp.hpp"
+#include "environment.hpp"
 
 using cgp::mesh;
 using cgp::mesh_drawable;
@@ -10,6 +11,7 @@ struct Ground {
     vec3 ground_scale;
     mesh ground_mesh;
     mesh_drawable ground_drawable;
+    mesh_drawable dust;
 
     // Initialize the mesh of the ground and the mesh_drawable
     // We scale the mesh_drawable by ground_scale
@@ -22,4 +24,6 @@ struct Ground {
     // else is called before some initialization stuff
     // in cgp and segfault yeepee
     Ground();
+
+    void display(environment_structure environement);
 };
