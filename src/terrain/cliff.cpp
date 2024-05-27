@@ -7,21 +7,10 @@ using namespace cgp;
 
 float compute_cliff_height(float u, float v, perlin_noise_parameters p) {
     float p_noise = noise_perlin({u, v}, p.octave, p.persistency, p.frequency);
-    float u_ctrd = u - 0.5;
-    float v_ctrd = v - 0.5;
-    float r = sqrt(u_ctrd * u_ctrd + v_ctrd * v_ctrd);
-    float r_max = sqrt(0.5 * 0.5);
-
-    // Affine par morceaux
-    float epsilon = 0.1;
-    float d = 0;
-
-    if (std::abs(r_max - r) > epsilon)
-        return 0;
-
-    d = std::min(1.0f, (r - (r_max - epsilon)) / epsilon);
-
-    return (4 * p_noise + 3 * d) / 7;
+    float u_ctrd = 2 * (u - 0.5);
+    float v_ctrd = 2 * (v - 0.5);
+    float d = std::min(1.0, pow(pow(u_ctrd, 2) + pow(v_ctrd, 2), 3));
+    return 0.4 * p_noise + 0.55 * d;
 }
 
 void initialize_cliff(mesh &cliff, perlin_noise_parameters parameters) {
@@ -43,15 +32,14 @@ void initialize_cliff(mesh &cliff, perlin_noise_parameters parameters) {
             if (height == 0)
                 continue;
 
-            // The higher the darker
-            vec3 dark = {60.0f / 255, 40.0f / 255, 20.0f / 255};
-            dark = {0, 1, 0};
-            vec3 light = {150.0f / 255, 100.0f / 255, 60.0f / 255};
-            light = {1, 0, 0};
+            // The higher the lighter
+            vec3 dark = {120.0f / 255, 70.0f / 255, 30.0f / 255};
+            dark = {0, 0, 0};
+            vec3 light = {240.0f / 255, 140.0f / 255, 50.0f / 255};
 
-            float lambda = 7 * height / (4 + 3 * 2);
+            float lambda = height;
 
-            cliff.color[idx] = (1 - lambda) * light + lambda * dark;
+            cliff.color[idx] = (1 - lambda) * dark + lambda * light;
         }
     }
 }
@@ -75,7 +63,7 @@ mesh create_cliff_mesh(float uv_range) {
         }
     }
 
-    perlin_noise_parameters p = {0.35f, 2.5f, 3, 1};
+    perlin_noise_parameters p = {0.35f, 2.5f, 4, 1};
     initialize_cliff(cliff_mesh, p);
 
     return cliff_mesh;
@@ -86,13 +74,13 @@ Cliff::Cliff(vec3 cliff_scale, float uv_range) {
     cliff_mesh = create_cliff_mesh(uv_range);
     cliff_drawable.initialize_data_on_gpu(cliff_mesh);
     cliff_drawable.texture.load_and_initialize_texture_2d_on_gpu(
-        project::path + "assets/cliff_light.jpg", GL_REPEAT, GL_REPEAT);
+        project::path + "assets/cliff.jpg", GL_REPEAT, GL_REPEAT);
     cliff_drawable.model.set_scaling_xyz(cliff_scale);
 
     // Light settings - colors are handled by initialize_cliff_drawable
     cliff_drawable.material.phong.specular = 0;
     cliff_drawable.material.phong.diffuse = 0;
-    cliff_drawable.material.phong.ambient = 1.5f;
+    cliff_drawable.material.phong.ambient = 1.0f;
 }
 
 Cliff::Cliff() {}
