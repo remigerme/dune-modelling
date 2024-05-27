@@ -1,9 +1,19 @@
 #include "cgp/cgp.hpp"
 
-float worm_shape(float a, float r, float x);
-float mouth_shape(float x_mouth, float x_bottom, float R, float r);
+using cgp::hierarchy_mesh_drawable;
+using cgp::vec3;
 
-cgp::mesh create_worm_body(float radius, float h, int length_h, float x_mouth,
-                           float a);
+struct Worm {
+    hierarchy_mesh_drawable worm;
 
-cgp::mesh create_worm_head(cgp::mesh body, float x_mouth, float x_mottom);
+    // Initialize the mesh of the marteleur and the mesh_drawable
+    // Useless argument but used to differ this ctor from the next one
+    // See below the reason
+    Worm(bool _unused);
+
+    // Just to avoid compilation warnings
+    // Do nothing and should do nothing
+    // else is called before some initialization stuff
+    // in cgp and segfault yeepee
+    Worm();
+};

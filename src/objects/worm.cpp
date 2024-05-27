@@ -131,3 +131,30 @@ cgp::mesh create_worm_head(cgp::mesh body, float x_mouth, float x_bottom) {
     m.fill_empty_field();
     return m;
 }
+
+Worm::Worm(bool _unused) {
+    // Create the hierarchy
+    // ************************************ //
+
+    // Initialize the temporary mesh_drawable that will be inserted in the
+    // hierarchy
+    float x_mouth = 0.4;
+    mesh_drawable worm_body;
+    mesh body = create_worm_body(1.0, 0.01, 30, x_mouth, 0.4);
+    worm_body.initialize_data_on_gpu(body);
+    mesh_drawable worm_head;
+    worm_head.initialize_data_on_gpu(
+        create_worm_head(body, x_mouth, x_mouth - 0.5));
+
+    // Create the geometry of the meshes
+
+    worm.add(worm_body, "worm_body");
+    worm.add(worm_head, "worm_head", "worm_body");
+
+    // Add the elements in the hierarchy
+}
+
+Worm::Worm() {
+    // We're not supposed to use this one !
+    assert(false);
+}
