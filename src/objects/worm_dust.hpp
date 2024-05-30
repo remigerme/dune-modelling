@@ -3,16 +3,19 @@
 #include "cgp/cgp.hpp"
 #include "environment.hpp"
 
-using cgp::camera_controller_orbit_euler;
-using cgp::camera_projection_perspective;
-using cgp::mesh_drawable;
-
 struct WormDust {
-    std::vector<mesh_drawable> quads;
+    int n_particules;
+    cgp::mesh_drawable particule;
+    cgp::numarray<cgp::vec3> pos;
+    cgp::numarray<cgp::vec4> phong;
 
-    WormDust(int n_quads);
+    WormDust(int n_particules);
 
-    void display(environment_structure environment,
-                 camera_controller_orbit_euler camera_control,
-                 camera_projection_perspective camera_projection);
+    // Just to avoid compilation warnings
+    // Do nothing and should do nothing
+    // else is called before some initialization stuff
+    // in cgp and segfault yeepee
+    WormDust(void);
+
+    void display(cgp::environment_structure environment);
 };
