@@ -25,9 +25,7 @@ WormDust::WormDust(int n_particules) {
                           project::path + "shaders/worm/dust.frag.glsl");
 }
 
-void WormDust::display(environment_structure environment,
-                       camera_controller_orbit_euler camera_control,
-                       camera_projection_perspective camera_projection) {
+void WormDust::display(environment_structure environment) {
     // Enable use of alpha component as color blending for transparent elements
     //  alpha = current_color.alpha
     //  new color = previous_color * alpha + current_color * (1-alpha)
@@ -38,8 +36,6 @@ void WormDust::display(environment_structure environment,
     //  - Transparent elements cannot use depth buffer
     //  - They are supposed to be display from furest to nearest elements
     glDepthMask(false);
-
-    auto const &camera = camera_control.camera_model;
 
     // Display the quads relative to their depth
     draw(particule, environment, n_particules);

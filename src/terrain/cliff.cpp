@@ -1,7 +1,7 @@
 #include "cliff.hpp"
 
 #include "../noise/perlin.hpp"
-#include "environment.hpp"
+#include "environment_dune.hpp"
 
 using namespace cgp;
 

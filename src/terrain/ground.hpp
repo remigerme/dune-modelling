@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cgp/cgp.hpp"
-#include "environment.hpp"
+#include "environment_dune.hpp"
 
 using cgp::mesh;
 using cgp::mesh_drawable;

@@ -1,5 +1,5 @@
-#include "cgp/cgp.hpp"     // Give access to the complete CGP library
-#include "environment.hpp" // The general scene environment + project variable
+#include "cgp/cgp.hpp"          // Give access to the complete CGP library
+#include "environment_dune.hpp" // The general scene environment + project variable
 #include <iostream>
 
 #include <chrono>

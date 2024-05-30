@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cgp/cgp.hpp"
-#include "environment.hpp"
+#include "environment_dune.hpp"
 
 struct WormDust {
     int n_particules;
@@ -17,5 +17,5 @@ struct WormDust {
     // in cgp and segfault yeepee
     WormDust(void);
 
-    void display(cgp::environment_structure environment);
+    void display(environment_structure environment);
 };
