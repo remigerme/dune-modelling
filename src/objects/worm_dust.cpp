@@ -7,20 +7,20 @@ WormDust::WormDust() {}
 WormDust::WormDust(int n_particules) {
     this->n_particules = n_particules;
     pos.resize(n_particules);
-    phong.resize(n_particules);
+    alpha.resize(n_particules);
 
     mesh sphere = mesh_primitive_sphere();
     particule.initialize_data_on_gpu(sphere);
     particule.texture.load_and_initialize_texture_2d_on_gpu(
-        project::path + "assets/sand.jpg", GL_REPEAT, GL_REPEAT);
-
+        project::path + "assets/dust.jpg", GL_REPEAT, GL_REPEAT);
+    particule.material.phong = {1, 0, 0.2f, 80};
     for (int i = 0; i < n_particules; i++) {
         pos[i] = {0.2 * i, 0.2 * i, 0.2 * i};
-        phong[i] = {0, 0, 1, (float)i / n_particules};
+        alpha[i] = {(float)i / n_particules, 0};
     }
 
     particule.initialize_supplementary_data_on_gpu(pos, 4, 1);
-    particule.initialize_supplementary_data_on_gpu(phong, 5, 1);
+    particule.initialize_supplementary_data_on_gpu(alpha, 5, 1);
     particule.shader.load(project::path + "shaders/worm/dust.vert.glsl",
                           project::path + "shaders/worm/dust.frag.glsl");
 }

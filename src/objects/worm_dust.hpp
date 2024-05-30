@@ -7,7 +7,7 @@ struct WormDust {
     int n_particules;
     cgp::mesh_drawable particule;
     cgp::numarray<cgp::vec3> pos;
-    cgp::numarray<cgp::vec4> phong;
+    cgp::numarray<vec2> alpha; // useless 2nd coef - can't use float
 
     WormDust(int n_particules);
 
