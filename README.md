@@ -33,4 +33,4 @@ make -j8
 
 ## Learn more about the project
 
-A [blog article](https://url.remigerme.xyz/dune-modelling) will soon be available.
+A [blog article](https://url.remigerme.xyz/dunemodelling) will soon be available.
