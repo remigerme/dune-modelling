@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cgp/cgp.hpp"
-#include "environment.hpp"
+#include "environment_dune.hpp"
 #include "objects.hpp"
 #include "terrain.hpp"
 
@@ -41,7 +41,8 @@ struct scene_structure : cgp::scene_inputs_generic {
     Ground ground;
     Cliff cliff;
     Marteleur marteleur;
-    mesh_drawable worm;
+    WormDust worm_dust;
+    Worm worm;
 
     /*************/
     /* Functions */
