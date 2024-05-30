@@ -30,3 +30,7 @@ To compile and run the project, use this command - still inside the `build` dire
 make -j8
 ./dune-modelling
 ```
+
+## Learn more about the project
+
+A [blog article](https://url.remigerme.xyz/dune-modelling) will soon be available.
