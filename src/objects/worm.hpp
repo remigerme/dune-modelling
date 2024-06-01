@@ -1,9 +1,13 @@
 #include "cgp/cgp.hpp"
 
 using cgp::hierarchy_mesh_drawable;
-using cgp::vec3;
+using cgp::mesh;
 
 struct Worm {
+    // body mesh - warning : do not include head
+    // required by worm dust to place dust particles
+    mesh body;
+
     hierarchy_mesh_drawable worm;
 
     // Initialize the mesh of the marteleur and the mesh_drawable

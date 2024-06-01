@@ -51,7 +51,6 @@ cgp::mesh create_worm_body(float radius, float h, int length_h, float x_mouth,
             int idx = kh * polygone + ku;
             float z = m.position[idx].z;
             float y = m.position[idx].y;
-            float r = sqrt(y * y + z * z);
             float p_noise = noise_perlin(m.position[idx], p.octave,
                                          p.persistency, p.frequency);
 
@@ -150,22 +149,20 @@ Worm::Worm(bool _unused) {
     // Create the hierarchy
     // ************************************ //
 
-    // Initialize the temporary mesh_drawable that will be inserted in the
-    // hierarchy
+    // Create the geometry of the meshes
+    // And mesh drawable which will be inserted in the hierarchy
     float x_mouth = 0.4;
     mesh_drawable worm_body;
-    mesh body = create_worm_body(1.0, 0.01, 30, x_mouth, 0.4);
+    body = create_worm_body(1.0, 0.01, 30, x_mouth, 0.4);
     worm_body.initialize_data_on_gpu(body);
+
     mesh_drawable worm_head;
     worm_head.initialize_data_on_gpu(
         create_worm_head(body, x_mouth, x_mouth - 0.5));
 
-    // Create the geometry of the meshes
-
+    // Add the elements in the hierarchy
     worm.add(worm_body, "worm_body");
     worm.add(worm_head, "worm_head", "worm_body");
-
-    // Add the elements in the hierarchy
 }
 
 Worm::Worm() {
