@@ -4,7 +4,7 @@ using namespace cgp;
 
 WormDust::WormDust() {}
 
-WormDust::WormDust(int n_particules) {
+WormDust::WormDust(int n_particules, mesh worm) {
     this->n_particules = n_particules;
     pos.resize(n_particules);
     alpha.resize(n_particules);
@@ -14,8 +14,19 @@ WormDust::WormDust(int n_particules) {
     particule.texture.load_and_initialize_texture_2d_on_gpu(
         project::path + "assets/dust.jpg", GL_REPEAT, GL_REPEAT);
     particule.material.phong = {1, 0, 0.2f, 80};
-    for (int i = 0; i < n_particules; i++) {
-        pos[i] = {0.2 * i, 0.2 * i, 0.2 * i};
+    double phi = (1.0 + std::sqrt(5.0)) / 2.0; // golden ratio
+    for (int i = 0; i < n_particules; ++i) {
+        double r = 10 * std::cbrt(i + 0.5) /
+                   std::cbrt(n_particules); // scale radius for uniform
+                                            // distribution in volume
+        double theta = 2 * M_PI * i / phi;
+        double z = 1 - (2.0 * i + 1.0) / n_particules;
+        double radius = std::sqrt(1 - z * z);
+
+        pos[i].x = radius * std::cos(theta) * r;
+        pos[i].y = radius * std::sin(theta) * r;
+        pos[i].z = z * r;
+
         alpha[i] = {(float)i / n_particules, 0};
     }
 
