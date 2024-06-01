@@ -33,4 +33,4 @@ make -j8
 
 ## Learn more about the project
 
-A [blog article](https://url.remigerme.xyz/dunemodelling) will soon be available.
+A [blog article](https://url.remigerme.xyz/dunemodelling) is available. Main handcrafted mechanisms are presented in a graphic way to help understand how the project was made without diving into the code.
