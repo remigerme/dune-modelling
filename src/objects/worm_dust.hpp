@@ -9,7 +9,7 @@ struct WormDust {
     cgp::numarray<cgp::vec3> pos;
     cgp::numarray<vec2> alpha; // useless 2nd coef - can't use float
 
-    WormDust(int n_particules);
+    WormDust(int n_particules, cgp::mesh worm);
 
     // Just to avoid compilation warnings
     // Do nothing and should do nothing

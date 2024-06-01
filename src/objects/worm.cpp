@@ -147,18 +147,17 @@ cgp::mesh create_worm_head(cgp::mesh body, float x_mouth, float x_bottom) {
 
 Worm::Worm(bool _unused) {
     // Create the hierarchy
-    // ************************************ //
 
     // Create the geometry of the meshes
     // And mesh drawable which will be inserted in the hierarchy
     float x_mouth = 0.4;
     mesh_drawable worm_body;
-    body = create_worm_body(1.0, 0.01, 30, x_mouth, 0.4);
-    worm_body.initialize_data_on_gpu(body);
+    body_mesh = create_worm_body(1.0, 0.01, 30, x_mouth, 0.4);
+    worm_body.initialize_data_on_gpu(body_mesh);
 
     mesh_drawable worm_head;
     worm_head.initialize_data_on_gpu(
-        create_worm_head(body, x_mouth, x_mouth - 0.5));
+        create_worm_head(body_mesh, x_mouth, x_mouth - 0.5));
 
     // Add the elements in the hierarchy
     worm.add(worm_body, "worm_body");

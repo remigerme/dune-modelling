@@ -6,7 +6,7 @@ using cgp::mesh;
 struct Worm {
     // body mesh - warning : do not include head
     // required by worm dust to place dust particles
-    mesh body;
+    mesh body_mesh;
 
     hierarchy_mesh_drawable worm;
 
