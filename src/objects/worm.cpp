@@ -96,7 +96,7 @@ cgp::mesh create_worm_head(cgp::mesh body, float x_mouth, float x_bottom) {
     int polygone = 30;
     int concentique = 15;
 
-    for (int kh = 0; kh < concentique + 1; kh++) {
+    for (int kh = 0; kh < concentique; kh++) {
         for (int ku = 0; ku < polygone; ku++) {
             float rayon = sqrt(body.position[ku].y * body.position[ku].y +
                                body.position[ku].z * body.position[ku].z);
@@ -109,7 +109,13 @@ cgp::mesh create_worm_head(cgp::mesh body, float x_mouth, float x_bottom) {
         }
     }
 
-    for (int kh = 0; kh < concentique; kh++) {
+    // To close the mouth in the center
+    float rayon = sqrt(body.position[0].y * body.position[0].y +
+                       body.position[0].z * body.position[0].z);
+    float depth = mouth_shape(x_mouth, x_bottom, rayon, 0);
+    m.position.push_back(vec3{depth, 0, 0});
+
+    for (int kh = 0; kh < concentique - 1; kh++) {
         for (int ku = 0; ku < polygone - 1; ku++) {
 
             uint3 triangle_1 = {polygone * kh + ku + 1,
@@ -126,6 +132,14 @@ cgp::mesh create_worm_head(cgp::mesh body, float x_mouth, float x_bottom) {
                             polygone * (kh + 1) - 1};
         m.connectivity.push_back(triangle_1);
         m.connectivity.push_back(triangle_2);
+    }
+
+    // To close the mouth in the center
+    for (int ku = 0; ku < polygone; ku++) {
+        uint3 triangle = {polygone * (concentique - 1) + (ku + 1) % polygone,
+                          polygone * concentique,
+                          polygone * (concentique - 1) + ku};
+        m.connectivity.push_back(triangle);
     }
 
     m.fill_empty_field();
