@@ -26,6 +26,7 @@ uniform mat4 view;  // View matrix (rigid transform) of the camera
 uniform mat4 projection; // Projection (perspective or orthogonal) matrix of the camera
 uniform float time; // Time used to animate the dust
 uniform float crand ; // Random float in [0, 1] generated in display_frame
+uniform vec3 pos_worm; // Position of the worm
 
 // Random noise - https://stackoverflow.com/questions/4200224/random-noise-functions-for-glsl
 float PHI = 1.61803398874989484820459;
@@ -34,8 +35,11 @@ float rand(in float n) { return gold_noise(vec2(n,n+0.5), 1.0); }
 
 
 vec3 small_disturbance(in float t, in vec3 pos) {
-	vec3 s = vec3(sin(10 * rand(gl_InstanceID) * t), cos(t), 0);
-	return s;
+	float rid = rand(gl_InstanceID);
+	float x = sin(10 * rid * t);
+	float y = cos(17 * rid * t);
+	float z = 2 * cos(t + 10 * 3.14 * rid);
+	return vec3(x, y, z);
 }
 
 
@@ -43,6 +47,7 @@ void main()
 {
 	// The position of the vertex in the world space
 	vec4 position = model * vec4(vertex_position, 1);
+	position += vec4(pos_worm, 1);
 	position += vec4(pos, 1);
 	position += vec4(small_disturbance(time, pos), 1);
 
@@ -57,12 +62,12 @@ void main()
 	// Random color - not using vertex_color
 	vec3 light = vec3(1, 0.88, 0.36);
 	vec3 dark = vec3(0.7, 0.48, 0.18);
-	float lambda = pow(rand(floor(10 * time) + pos[0] + pos[1]), 4);
+	float lambda = pow(rand(floor(time + 10 * rand(gl_InstanceID)) + pos[0] + pos[1]), 4);
 
 	fragment.position = position.xyz;
 	fragment.normal   = normal.xyz;
 	fragment.color = (1 - lambda) * light + lambda * dark;
-	float eps_alpha = (rand(floor(10 * time) * gl_InstanceID) - 0.5) / 10;
+	float eps_alpha = (rand(floor(time + 17 * rand(gl_InstanceID)) * gl_InstanceID) - 0.5) / 10;
 	fragment.alpha = alpha[0] + eps_alpha;
 	fragment.uv = vertex_uv;
 
