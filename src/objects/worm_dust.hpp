@@ -2,6 +2,7 @@
 
 #include "cgp/cgp.hpp"
 #include "environment_dune.hpp"
+#include "worm.hpp"
 
 struct WormDust {
     int n_particules;
@@ -9,7 +10,7 @@ struct WormDust {
     cgp::numarray<cgp::vec3> pos;
     cgp::numarray<vec2> alpha; // useless 2nd coef - can't use float
 
-    WormDust(int n_particules, cgp::mesh worm);
+    WormDust(int n_particules, Worm worm);
 
     // Just to avoid compilation warnings
     // Do nothing and should do nothing
