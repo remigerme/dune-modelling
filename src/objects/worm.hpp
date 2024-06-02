@@ -1,19 +1,20 @@
+#pragma once
+
 #include "cgp/cgp.hpp"
 
 using cgp::hierarchy_mesh_drawable;
 using cgp::mesh;
 
 struct Worm {
+    // display scale of the worm
+    float scale;
     // body mesh - warning : do not include head
     // required by worm dust to place dust particles
     mesh body_mesh;
-
     hierarchy_mesh_drawable worm;
 
-    // Initialize the mesh of the marteleur and the mesh_drawable
-    // Useless argument but used to differ this ctor from the next one
-    // See below the reason
-    Worm(bool _unused);
+    // Initialize the worm
+    Worm(float scale);
 
     // Just to avoid compilation warnings
     // Do nothing and should do nothing
