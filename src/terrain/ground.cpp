@@ -1,13 +1,11 @@
 #include "ground.hpp"
 
-#include "../noise/perlin.hpp"
-
 using namespace cgp;
 
-float compute_noise(float u, float v, perlin_noise_parameters parameters) {
+float compute_noise(float u, float v, perlin_noise_parameters perlin) {
     // Initial Perloin noise
-    float p_noise = noise_perlin({u, v}, parameters.octave,
-                                 parameters.persistency, parameters.frequency);
+    float p_noise = noise_perlin({u, v}, perlin.octave, perlin.persistency,
+                                 perlin.frequency);
 
     // We rescale coordinates for custom dune profil
     float us = 7 * u - 1;
@@ -20,7 +18,7 @@ float compute_noise(float u, float v, perlin_noise_parameters parameters) {
     return noise;
 }
 
-void initialize_ground(mesh &ground, perlin_noise_parameters parameters) {
+void initialize_ground(mesh &ground, perlin_noise_parameters perlin) {
     // Number of samples in each direction (assuming a square grid)
     int const N = std::sqrt(ground.position.size());
 
@@ -33,10 +31,10 @@ void initialize_ground(mesh &ground, perlin_noise_parameters parameters) {
 
             int const idx = ku * N + kv;
 
-            const float noise = compute_noise(u, v, parameters);
+            const float noise = compute_noise(u, v, perlin);
 
             // use the noise as height value
-            ground.position[idx].z = parameters.height * noise;
+            ground.position[idx].z = perlin.height * noise;
 
             // use also the noise as color value
             ground.color[idx] =
@@ -45,7 +43,7 @@ void initialize_ground(mesh &ground, perlin_noise_parameters parameters) {
     }
 }
 
-mesh create_ground_mesh(float uv_range) {
+mesh create_ground_mesh(float uv_range, perlin_noise_parameters perlin) {
     int const ground_sample = 300;
     mesh ground_mesh =
         mesh_primitive_grid({-1, -1, 0}, {1, -1, 0}, {1, 1, 0}, {-1, 1, 0},
@@ -64,16 +62,14 @@ mesh create_ground_mesh(float uv_range) {
         }
     }
 
-    // Manually set perlin noise
-    perlin_noise_parameters p = {0.35f, 3.5f, 3, 0.35f};
-    initialize_ground(ground_mesh, p);
+    initialize_ground(ground_mesh, perlin);
 
     return ground_mesh;
 }
 
 Ground::Ground(vec3 ground_scale, float uv_range) {
     this->ground_scale = ground_scale;
-    ground_mesh = create_ground_mesh(uv_range);
+    ground_mesh = create_ground_mesh(uv_range, perlin);
     ground_drawable.initialize_data_on_gpu(ground_mesh);
     ground_drawable.model.set_scaling_xyz(ground_scale);
     ground_drawable.texture.load_and_initialize_texture_2d_on_gpu(
@@ -85,7 +81,7 @@ Ground::Ground(vec3 ground_scale, float uv_range) {
 
     dust.initialize_data_on_gpu(ground_mesh);
     dust.model.set_scaling_xyz(ground_scale);
-    dust.model.set_translation({0, 0, 0.1f});
+    dust.model.set_translation({0, 0, 0.05f});
     dust.texture.load_and_initialize_texture_2d_on_gpu(
         project::path + "assets/sand.jpg", GL_REPEAT, GL_REPEAT);
     dust.material.alpha = 0.3f;
@@ -119,4 +115,21 @@ void Ground::display(environment_structure environment) {
     // Don't forget to re-activate the depth-buffer write
     glDepthMask(true);
     glDisable(GL_BLEND);
+}
+
+float Ground::get_height(float x, float y, bool scaled) {
+    // (x, y) are (un?)scaled coordinates
+    float gx = ground_scale.x;
+    float gy = ground_scale.y;
+    assert_cgp(scaled || (0 <= x && x <= 1), "x should be unscaled.\n");
+    assert_cgp(scaled || (0 <= y && y <= 1), "y should be unscaled.\n");
+    assert_cgp(!scaled || (-gx <= x && x <= gx), "x should be scaled.\n");
+    assert_cgp(!scaled || (-gy <= y && y <= gy), "y should be scaled.\n");
+
+    if (scaled) {
+        x = (x + gx) / (2 * gx);
+        y = (y + gy) / (2 * gy);
+    }
+
+    return ground_scale.z * perlin.height * compute_noise(x, y, perlin);
 }
