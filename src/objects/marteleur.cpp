@@ -78,10 +78,24 @@ Marteleur::Marteleur(bool _unused) {
         mesh_primitive_conetronqued(0.05, 0, 0.15, 0.05));
 
     // Set the color of some elements
-    haut.material.color = {1.0f, 0.5f, 0.1f};
+    /*
+    vec3 grey = {0.15f, 0.15f, 0.15f};
+    vec3 dc = {0.04f, 0.04f, 0.04f};
+    Useless but keep in case of...
+    tete.material.color = grey;
+    haut.material.color = grey;
+    disc3.material.color = grey;
+    corrole.material.color = grey - dc;
+    disc1.material.color = grey - dc;
+    disc2.material.color = grey - dc;
+    bas.material.color = grey - dc;
+    cone_bas.material.color = grey - 2 * dc;
+    pas_de_vis.material.color = grey - 2 * dc;
+    pas_bas.material.color = grey - 3 * dc;
+    */
+    tube_central.material.color = {0.5f, 0.5f, 0.5f};
 
     // Add the elements in the hierarchy
-
     marteleur.add(tube_central, "tube_central");
     marteleur.add(corrole, "corrole", "tube_central", {0, 0, 1});
     marteleur.add(disc1, "disc1", "corrole", {0, 0, 0.05});
@@ -93,6 +107,17 @@ Marteleur::Marteleur(bool _unused) {
     marteleur.add(cone_bas, "cone_bas", "tube_central", {0, 0, 0.65});
     marteleur.add(pas_de_vis, "pas_de_vis", "tube_central", {0, 0, 0.50});
     marteleur.add(pas_bas, "pas_bas", "tube_central", {0, 0, 0.45});
+
+    // No specular effect except for tube_central
+    for (auto &e : marteleur.elements)
+        e.drawable.material.phong.specular = 0;
+    marteleur["tube_central"].drawable.material.phong.specular = 0.6f;
+
+    // Texture for everyone except tube_central
+    for (auto &e : marteleur.elements)
+        if (e.name != "tube_central")
+            e.drawable.texture.load_and_initialize_texture_2d_on_gpu(
+                project::path + "assets/slate.jpg", GL_REPEAT, GL_REPEAT);
 }
 
 Marteleur::Marteleur() {
