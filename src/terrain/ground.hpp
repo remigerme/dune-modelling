@@ -32,7 +32,7 @@ struct Ground {
     // Compute scaled height at scaled coordinates (x, y) by default
     // Coordinates are in [-scale.x, scale.x]*[-scale.y, scale.y]
     // We can pass unscaled coordinates too (x, y) in [0, 1]*[0, 1]
-    float get_height(float x, float y, bool scaled = false);
+    float get_height(float x, float y, bool scaled = true);
 
     void display(environment_structure environement);
 };
