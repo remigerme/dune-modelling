@@ -37,6 +37,10 @@ cgp::mesh create_worm_body(float radius, float h, int length_h, float x_mouth,
         float abscicsse = x_mouth - k * h * length_h;
         float shape = worm_shape(a, radius, abscicsse);
         for (int i = 0; i < polygone; i++) {
+            float const u = k / (length_h - 1.0f);
+            float const v = i / (polygone - 1.0f);
+            m.uv.push_back({u, v});
+
             float frac = 2 * Pi / polygone;
             float y = shape * cos(i * frac);
             float z = shape * sin(i * frac);
@@ -97,6 +101,10 @@ cgp::mesh create_worm_head(cgp::mesh body, float x_mouth, float x_bottom) {
 
     for (int kh = 0; kh < concentique; kh++) {
         for (int ku = 0; ku < polygone; ku++) {
+            float const u = kh / (concentique - 1.0f);
+            float const v = ku / (polygone - 1.0f);
+            m.uv.push_back({1, v});
+
             float rayon = sqrt(body.position[ku].y * body.position[ku].y +
                                body.position[ku].z * body.position[ku].z);
             float frac = 2 * Pi / polygone;
@@ -155,6 +163,10 @@ Worm::Worm(float scale) {
     mesh_drawable worm_body;
     body_mesh = create_worm_body(1.0, 0.01, 20, x_mouth, 0.4);
     worm_body.initialize_data_on_gpu(body_mesh);
+    worm_body.material.phong.specular = 0;
+    worm_body.texture.load_and_initialize_texture_2d_on_gpu(
+        "/home/isaline.jouve/dune-modelling/assets/cliff.jpg", GL_REPEAT,
+        GL_REPEAT);
 
     mesh_drawable worm_head;
     worm_head.initialize_data_on_gpu(
