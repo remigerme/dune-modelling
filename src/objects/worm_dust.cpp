@@ -4,30 +4,44 @@ using namespace cgp;
 
 WormDust::WormDust() {}
 
-WormDust::WormDust(int n_particules, mesh worm) {
+// Function to filter upper part vertices
+numarray<vec3> filter_upper_part(const numarray<vec3> positions,
+                                 float threshold) {
+    numarray<vec3> upper_positions;
+    for (const auto &pos : positions) {
+        if (pos.z > threshold) {
+            upper_positions.push_back(pos);
+        }
+    }
+    return upper_positions;
+}
+
+WormDust::WormDust(int n_particules, Worm worm) {
     this->n_particules = n_particules;
     pos.resize(n_particules);
     alpha.resize(n_particules);
 
-    mesh sphere = mesh_primitive_sphere();
+    mesh sphere = mesh_primitive_sphere(3);
     particule.initialize_data_on_gpu(sphere);
     particule.texture.load_and_initialize_texture_2d_on_gpu(
         project::path + "assets/dust.jpg", GL_REPEAT, GL_REPEAT);
     particule.material.phong = {1, 0, 0.2f, 80};
-    double phi = (1.0 + std::sqrt(5.0)) / 2.0; // golden ratio
+
+    // Filter upper part points
+    float z_threshold = -0.5f;
+    numarray<vec3> upper_positions =
+        filter_upper_part(worm.body_mesh.position, z_threshold);
+
+    if (upper_positions.size() == 0) {
+        throw std::runtime_error(
+            "No points found in the upper part of the mesh.");
+    }
+
+    float x_offset = 15;
+    int N = upper_positions.size();
     for (int i = 0; i < n_particules; ++i) {
-        double r = 10 * std::cbrt(i + 0.5) /
-                   std::cbrt(n_particules); // scale radius for uniform
-                                            // distribution in volume
-        double theta = 2 * M_PI * i / phi;
-        double z = 1 - (2.0 * i + 1.0) / n_particules;
-        double radius = std::sqrt(1 - z * z);
-
-        pos[i].x = radius * std::cos(theta) * r;
-        pos[i].y = radius * std::sin(theta) * r;
-        pos[i].z = z * r;
-
-        alpha[i] = {(float)i / n_particules, 0};
+        pos[i] = 5 * worm.scale * upper_positions[i % N] - vec3{x_offset, 0, 0};
+        alpha[i] = {(float)rand() / RAND_MAX, 0};
     }
 
     particule.initialize_supplementary_data_on_gpu(pos, 4, 1);
