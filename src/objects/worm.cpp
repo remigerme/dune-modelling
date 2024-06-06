@@ -60,11 +60,11 @@ cgp::mesh create_worm_body(float radius, float h, int length_h, float x_mouth,
                                          p.persistency, p.frequency);
 
             if (kh < 10) {
-                float coeff_perlin = 0.2 + 0.1 * kh / 10;
+                float coeff_perlin = 0.1 + 0.1 * kh / 10;
                 m.position[idx].y = (1 + coeff_perlin * p_noise) * y;
                 m.position[idx].z = (1 + coeff_perlin * p_noise) * z;
             } else {
-                float coeff_perlin = 0.3;
+                float coeff_perlin = 0.2;
                 m.position[idx].y = (1 + coeff_perlin * p_noise) * y;
                 m.position[idx].z = (1 + coeff_perlin * p_noise) * z;
             }
@@ -164,7 +164,8 @@ Worm::Worm(float scale) {
     // And mesh drawable which will be inserted in the hierarchy
     float x_mouth = 0.4;
     mesh_drawable worm_body;
-    body_mesh = create_worm_body(1.0, 0.01, 20, x_mouth, 0.4);
+    body_mesh =
+        create_worm_body(scale, 0.01 * scale, 20, x_mouth * scale, 0.4 * scale);
     worm_body.initialize_data_on_gpu(body_mesh);
     worm_body.material.phong.specular = 0;
     worm_body.texture.load_and_initialize_texture_2d_on_gpu(
@@ -173,7 +174,7 @@ Worm::Worm(float scale) {
 
     mesh_drawable worm_head;
     worm_head.initialize_data_on_gpu(
-        create_worm_head(body_mesh, x_mouth, x_mouth - 0.5));
+        create_worm_head(body_mesh, x_mouth * scale, (x_mouth - 0.5) * scale));
     worm_head.material.phong.specular = 0;
     worm_head.texture.load_and_initialize_texture_2d_on_gpu(
         project::path + "assets/worm_head.png", GL_REPEAT, GL_REPEAT);
@@ -182,13 +183,14 @@ Worm::Worm(float scale) {
     // Add the elements in the hierarchy
     worm.add(worm_body, "worm_body");
     worm.add(worm_head, "worm_head", "worm_body");
-
-    // Display scaling
-    for (auto &e : worm.elements)
-        e.drawable.model.set_scaling(scale);
 }
 
 Worm::Worm() {
     // We're not supposed to use this one !
     assert(false);
+}
+
+void Worm::set_position(float x, float y, Ground ground) {
+    float z = ground.get_height(x, y);
+    worm["worm_body"].transform_local.translation = {x, y, z};
 }

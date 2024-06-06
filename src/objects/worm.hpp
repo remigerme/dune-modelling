@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../terrain/ground.hpp"
 #include "cgp/cgp.hpp"
 
 using cgp::hierarchy_mesh_drawable;
@@ -21,4 +22,6 @@ struct Worm {
     // else is called before some initialization stuff
     // in cgp and segfault yeepee
     Worm();
+
+    void set_position(float x, float y, Ground ground);
 };
