@@ -21,7 +21,7 @@ WormDust::WormDust(int n_particules, Worm worm) {
     pos.resize(n_particules);
     alpha.resize(n_particules);
 
-    mesh sphere = mesh_primitive_sphere(3);
+    mesh sphere = mesh_primitive_sphere(2);
     particule.initialize_data_on_gpu(sphere);
     particule.texture.load_and_initialize_texture_2d_on_gpu(
         project::path + "assets/dust.jpg", GL_REPEAT, GL_REPEAT);
@@ -40,9 +40,9 @@ WormDust::WormDust(int n_particules, Worm worm) {
     float x_offset = 10;
     int N = upper_positions.size();
     for (int i = 0; i < n_particules; ++i) {
-        pos[i] = 5 * worm.scale * upper_positions[i % N];
-        pos[i] -= vec3{x_offset, 0, 0};
-        alpha[i] = {(float)rand() / RAND_MAX, 0};
+        pos[i] = 1.4 * upper_positions[i % N];
+        // pos[i] -= vec3{x_offset, 0, 0};
+        alpha[i] = {std::max(0.0, (float)rand() / RAND_MAX - 0.5), 0};
     }
 
     particule.initialize_supplementary_data_on_gpu(pos, 4, 1);
