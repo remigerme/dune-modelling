@@ -1,4 +1,5 @@
 #include "worm.hpp"
+#include "../environment_dune.hpp"
 #include "../noise/perlin.hpp"
 
 using namespace cgp;
@@ -167,8 +168,7 @@ Worm::Worm(float scale) {
     worm_body.initialize_data_on_gpu(body_mesh);
     worm_body.material.phong.specular = 0;
     worm_body.texture.load_and_initialize_texture_2d_on_gpu(
-        "/home/isaline.jouve/dune-modelling/assets/worm_body.png", GL_REPEAT,
-        GL_REPEAT);
+        project::path + "assets/worm_body.png", GL_REPEAT, GL_REPEAT);
     worm_body.material.color = {0.89f, 0.78f, 0.73f};
 
     mesh_drawable worm_head;
@@ -176,8 +176,7 @@ Worm::Worm(float scale) {
         create_worm_head(body_mesh, x_mouth, x_mouth - 0.5));
     worm_head.material.phong.specular = 0;
     worm_head.texture.load_and_initialize_texture_2d_on_gpu(
-        "/home/isaline.jouve/dune-modelling/assets/worm_head.png", GL_REPEAT,
-        GL_REPEAT);
+        project::path + "assets/worm_head.png", GL_REPEAT, GL_REPEAT);
     worm_head.material.color = {0.89f, 0.78f, 0.67f};
 
     // Add the elements in the hierarchy
