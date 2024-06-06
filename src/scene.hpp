@@ -41,6 +41,8 @@ struct scene_structure : cgp::scene_inputs_generic {
     Ground ground;
     Cliff cliff;
     Marteleur marteleur;
+    bool marteleur_status = false;
+    float marteleur_xy[2];
     WormDust worm_dust;
     Worm worm;
 
