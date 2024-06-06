@@ -28,7 +28,7 @@ WormDust::WormDust(int n_particules, Worm worm) {
     particule.material.phong = {1, 0, 0.2f, 80};
 
     // Filter upper part points
-    float z_threshold = -0.5f;
+    float z_threshold = 0;
     numarray<vec3> upper_positions =
         filter_upper_part(worm.body_mesh.position, z_threshold);
 
@@ -37,10 +37,11 @@ WormDust::WormDust(int n_particules, Worm worm) {
             "No points found in the upper part of the mesh.");
     }
 
-    float x_offset = 15;
+    float x_offset = 10;
     int N = upper_positions.size();
     for (int i = 0; i < n_particules; ++i) {
-        pos[i] = 5 * worm.scale * upper_positions[i % N] - vec3{x_offset, 0, 0};
+        pos[i] = 5 * worm.scale * upper_positions[i % N];
+        pos[i] -= vec3{x_offset, 0, 0};
         alpha[i] = {(float)rand() / RAND_MAX, 0};
     }
 
