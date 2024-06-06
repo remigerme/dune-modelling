@@ -125,8 +125,8 @@ Marteleur::Marteleur() {
     assert(false);
 }
 
-void Marteleur::set_position(float x, float y, Ground ground) {
-    float z = ground.get_height(x, y);
+void Marteleur::set_position(float xy[2], Ground ground) {
+    float z = ground.get_height(xy[0], xy[1]);
     z -= 0.3f; // magic constant for better result
-    marteleur["tube_central"].transform_local.translation = {x, y, z};
+    marteleur["tube_central"].transform_local.translation = {xy[0], xy[1], z};
 }
