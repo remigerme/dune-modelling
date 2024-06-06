@@ -26,6 +26,7 @@ uniform mat4 view;  // View matrix (rigid transform) of the camera
 uniform mat4 projection; // Projection (perspective or orthogonal) matrix of the camera
 uniform float time; // Time used to animate the dust
 uniform vec3 pos_worm; // Position of the worm
+uniform float angle_worm;
 
 // Random noise - https://stackoverflow.com/questions/4200224/random-noise-functions-for-glsl
 float PHI = 1.61803398874989484820459;
@@ -44,17 +45,30 @@ vec3 small_disturbance(in float t, in vec3 pos) {
 
 void main()
 {
-
 	vec3 s = small_disturbance(time, pos);
-	// Translation matrix
+	// Big translation matrix
 	mat4 M = transpose(
-    	mat4(1.0, 0.0, 0.0, pos.x + pos_worm.x + s.x,
-        	0, 1.0, 0.0, pos.y + pos_worm.y + s.y,
-        	0.0, 0.0, 1.0, pos.z + pos_worm.z + s.z,
+    	mat4(1.0, 0.0, 0.0, pos.x + s.x,
+        	0, 1.0, 0.0, pos.y + s.y,
+        	0.0, 0.0, 1.0, pos.z + s.z,
+        	0.0, 0.0, 0.0, 1.0));
+
+	// Rotation matrix
+	mat4 R = transpose(
+    	mat4(cos(angle_worm), -sin(angle_worm), 0.0, 0,
+        	sin(angle_worm), cos(angle_worm), 0.0, 0,
+        	0.0, 0.0, 1.0, 0,
+        	0.0, 0.0, 0.0, 1.0));
+
+	// Big translation matrix
+	mat4 M_ = transpose(
+    	mat4(1.0, 0.0, 0.0, pos_worm.x,
+        	0, 1.0, 0.0, pos_worm.y,
+        	0.0, 0.0, 1.0, pos_worm.z,
         	0.0, 0.0, 0.0, 1.0));
 
 	// The position of the vertex in the world space
-	vec4 position = M * model * vec4(vertex_position, 1);
+	vec4 position = M_ * R * M * model * vec4(vertex_position, 1);
 	// The following operations are done by the translation matrix
 	// position += vec4(pos_worm, 0);
 	// position += vec4(pos, 0);
