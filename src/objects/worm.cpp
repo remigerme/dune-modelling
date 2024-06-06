@@ -42,9 +42,9 @@ cgp::mesh create_worm_body(float radius, float h, int length_h, float x_mouth,
             m.uv.push_back({u, v});
 
             float frac = 2 * Pi / polygone;
-            float y = shape * cos(i * frac);
-            float z = shape * sin(i * frac);
-
+            float phase = -Pi / 2;
+            float y = shape * cos(i * frac + phase);
+            float z = shape * sin(i * frac + phase);
             m.position.push_back(vec3{abscicsse, y, z});
         }
     }
@@ -97,21 +97,22 @@ cgp::mesh create_worm_head(cgp::mesh body, float x_mouth, float x_bottom) {
 
     mesh m;
     int polygone = 30;
-    int concentique = 15;
+    int concentique = 25;
 
     for (int kh = 0; kh < concentique; kh++) {
+        std::cout << kh << std::endl;
         for (int ku = 0; ku < polygone; ku++) {
-            float const u = kh / (concentique - 1.0f);
             float const v = ku / (polygone - 1.0f);
-            m.uv.push_back({1, v});
+            m.uv.push_back({0, v});
 
             float rayon = sqrt(body.position[ku].y * body.position[ku].y +
                                body.position[ku].z * body.position[ku].z);
             float frac = 2 * Pi / polygone;
+            float phase = -Pi / 2;
             float r = rayon * (concentique - kh) / concentique;
             float depth = mouth_shape(x_mouth, x_bottom, rayon, r);
-            float y = r * cos(ku * frac);
-            float z = r * sin(ku * frac);
+            float y = r * cos(ku * frac + phase);
+            float z = r * sin(ku * frac + phase);
             m.position.push_back(vec3{depth, y, z});
         }
     }
@@ -121,6 +122,7 @@ cgp::mesh create_worm_head(cgp::mesh body, float x_mouth, float x_bottom) {
                        body.position[0].z * body.position[0].z);
     float depth = mouth_shape(x_mouth, x_bottom, rayon, 0);
     m.position.push_back(vec3{depth, 0, 0});
+    m.uv.push_back({0, 0.5});
 
     for (int kh = 0; kh < concentique - 1; kh++) {
         for (int ku = 0; ku < polygone - 1; ku++) {
@@ -165,12 +167,18 @@ Worm::Worm(float scale) {
     worm_body.initialize_data_on_gpu(body_mesh);
     worm_body.material.phong.specular = 0;
     worm_body.texture.load_and_initialize_texture_2d_on_gpu(
-        "/home/isaline.jouve/dune-modelling/assets/cliff.jpg", GL_REPEAT,
+        "/home/isaline.jouve/dune-modelling/assets/worm_body.png", GL_REPEAT,
         GL_REPEAT);
+    worm_body.material.color = {0.89f, 0.78f, 0.73f};
 
     mesh_drawable worm_head;
     worm_head.initialize_data_on_gpu(
         create_worm_head(body_mesh, x_mouth, x_mouth - 0.5));
+    worm_head.material.phong.specular = 0;
+    worm_head.texture.load_and_initialize_texture_2d_on_gpu(
+        "/home/isaline.jouve/dune-modelling/assets/worm_head.png", GL_REPEAT,
+        GL_REPEAT);
+    worm_head.material.color = {0.89f, 0.78f, 0.67f};
 
     // Add the elements in the hierarchy
     worm.add(worm_body, "worm_body");
