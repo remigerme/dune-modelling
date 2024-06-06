@@ -7,6 +7,10 @@ using cgp::hierarchy_mesh_drawable;
 using cgp::mesh;
 
 struct Worm {
+    // DO NOT USE TO SET POSITION
+    // GETTER ONLY
+    cgp::vec2 position;
+
     // display scale of the worm
     float scale;
     // body mesh - warning : do not include head

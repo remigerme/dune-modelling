@@ -193,4 +193,5 @@ Worm::Worm() {
 void Worm::set_position(float x, float y, Ground ground) {
     float z = ground.get_height(x, y);
     worm["worm_body"].transform_local.translation = {x, y, z};
+    position = {x, y};
 }
