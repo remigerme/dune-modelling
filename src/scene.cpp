@@ -1,6 +1,29 @@
 #include "scene.hpp"
+#include <cmath>
 
 using namespace cgp;
+
+vec3 worm_position_orientation(float v, float time, vec2 coor, vec2 cible) {
+    // on rend dans l'ordre la nouvelle position selon x, la nouvelle position
+    // selon y , et l'angle d'orientation du ver
+    float dt = 0.1;
+    float distance_mvt = dt * v;
+    float x0 = cible[0] - coor[0];
+    float y0 = cible[1] - coor[1];
+    float distance = sqrt(x0 * x0 + y0 * y0);
+    float dX = ((rand() % 100) - 50) / 100.0f;
+    float dY = ((rand() % 100) - 50) / 100.0f;
+
+    vec2 direction = {x0 + dX * distance / 10, y0 + dY * distance / 10};
+    float d = sqrt(direction[0] * direction[0] + direction[1] * direction[1]);
+    float coeff_homo = distance_mvt / d;
+    float alpha = atan(direction[1] / direction[0]);
+
+    vec3 new_pos = {coor[0] + coeff_homo * direction[0],
+                    coor[1] + coeff_homo * direction[1], alpha};
+
+    return new_pos;
+}
 
 void scene_structure::initialize() {
     // Camera control
@@ -63,10 +86,10 @@ void scene_structure::display_frame() {
     marteleur.marteleur.update_local_to_global_coordinates();
 
     // Updating worm
-    float xt = timer.t;
-    float yt = 3 * timer.t;
-    vec3 pw = {xt, yt, ground.get_height(xt, yt)};
-    float aw = timer.t;
+    vec3 pw_ =
+        worm_position_orientation(1, timer.t, worm.position, vec2{100, 100});
+    float aw = pw_.z;
+    vec3 pw = {pw_.x, pw_.y, ground.get_height(pw_.x, pw_.y)};
     worm.set_position(pw.x, pw.y, ground);
     worm.worm["worm_body"].transform_local.set_rotation(
         rotation_transform::from_axis_angle({0, 0, 1}, aw));
