@@ -88,10 +88,8 @@ Ground::Ground(vec3 ground_scale, float uv_range) {
     dust.material.phong.specular = 0;
     dust.material.phong.diffuse = 0;
     dust.material.phong.ambient = 1.5f;
-    opengl_shader_structure dust_shader;
-    dust_shader.load(project::path + "shaders/ground/dust.vert.glsl",
+    dust.shader.load(project::path + "shaders/ground/dust.vert.glsl",
                      project::path + "shaders/mesh/mesh.frag.glsl"); // default
-    dust.shader = dust_shader;
 }
 
 Ground::Ground() {}

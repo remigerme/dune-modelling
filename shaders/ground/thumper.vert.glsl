@@ -24,8 +24,9 @@ uniform mat4 projection; // Projection (perspective or orthogonal) matrix of the
 
 // Additional uniform variable representing the time for the deformation
 uniform float time;
-uniform float X;
-uniform float Y;
+uniform float xm;
+uniform float ym;
+uniform bool statusm;
 
 // Deformer function
 //  Computes the procedural deformation z =0.02*cos(t) r2 (cos(r)+1) exp(-0.0r2);
@@ -41,7 +42,7 @@ float alt(float x, float y){
 
 vec3 deformer(vec3 p0)
 {
-	vec3 p = vec3(p0.x +X, p0.y+Y, alt(p0.x, p0.y));
+	vec3 p = vec3(p0.x +xm, p0.y+ym, alt(p0.x, p0.y));
 	return p;
 }
 
@@ -63,18 +64,25 @@ vec3 deformer_normal(vec3 p0)
 	return n;
 }
 
-void main()
-{
-	// Apply deformation
-	vec3 p_deformed = deformer(vertex_position);
-	vec3 n_deformed = deformer_normal(vertex_position);
+void main() {
+
+	vec3 p, n;
+
+	if (statusm) {
+		// Apply deformation
+		p = deformer(vertex_position);
+		n = deformer_normal(vertex_position);
+	} else {
+		p = vertex_position;
+		n = vertex_normal;
+	}
 
 	// The position of the vertex in the world space
-	vec4 position = model * vec4(p_deformed, 1.0);
+	vec4 position = model * vec4(p, 1.0);
 
 	// The normal of the vertex in the world space
 	mat4 modelNormal = transpose(inverse(model));
-	vec4 normal = modelNormal * vec4(n_deformed, 0.0);
+	vec4 normal = modelNormal * vec4(n, 0.0);
 
 	// The projected position of the vertex in the normalized device coordinates:
 	vec4 position_projected = projection * view * position;
@@ -88,4 +96,3 @@ void main()
 	// gl_Position is a built-in variable which is the expected output of the vertex shader
 	gl_Position = position_projected; // gl_Position is the projected vertex position (in normalized device coordinates)
 }
-

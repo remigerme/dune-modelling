@@ -1,7 +1,7 @@
 #pragma once
 
-#include "cgp/cgp.hpp"
 #include "../terrain/ground.hpp"
+#include "cgp/cgp.hpp"
 
 using cgp::hierarchy_mesh_drawable;
 using cgp::vec3;
@@ -22,5 +22,5 @@ struct Marteleur {
 
     // Sets position of whole hierarchy at scaled coordinates (x, y)
     // Computes z based on ground height
-    void set_position(float x, float y, Ground ground);
+    void set_position(float xy[2], Ground ground);
 };
