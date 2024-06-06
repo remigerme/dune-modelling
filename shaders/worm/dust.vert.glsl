@@ -25,7 +25,6 @@ uniform mat4 model; // Model affine transform matrix associated to the current s
 uniform mat4 view;  // View matrix (rigid transform) of the camera
 uniform mat4 projection; // Projection (perspective or orthogonal) matrix of the camera
 uniform float time; // Time used to animate the dust
-uniform float crand ; // Random float in [0, 1] generated in display_frame
 uniform vec3 pos_worm; // Position of the worm
 
 // Random noise - https://stackoverflow.com/questions/4200224/random-noise-functions-for-glsl
@@ -45,11 +44,21 @@ vec3 small_disturbance(in float t, in vec3 pos) {
 
 void main()
 {
+
+	vec3 s = small_disturbance(time, pos);
+	// Translation matrix
+	mat4 M = transpose(
+    	mat4(1.0, 0.0, 0.0, pos.x + pos_worm.x + s.x,
+        	0, 1.0, 0.0, pos.y + pos_worm.y + s.y,
+        	0.0, 0.0, 1.0, pos.z + pos_worm.z + s.z,
+        	0.0, 0.0, 0.0, 1.0));
+
 	// The position of the vertex in the world space
-	vec4 position = model * vec4(vertex_position, 1);
-	position += vec4(pos_worm, 1);
-	position += vec4(pos, 1);
-	position += vec4(small_disturbance(time, pos), 1);
+	vec4 position = M * model * vec4(vertex_position, 1);
+	// The following operations are done by the translation matrix
+	// position += vec4(pos_worm, 0);
+	// position += vec4(pos, 0);
+	// position += vec4(small_disturbance(time, pos), 0);
 
 	// The normal of the vertex in the world space
 	mat4 modelNormal = transpose(inverse(model));
