@@ -6,11 +6,14 @@
 using cgp::hierarchy_mesh_drawable;
 using cgp::mesh;
 using cgp::vec2;
+using cgp::vec3;
 
 struct Worm {
     // DO NOT USE TO SET POSITION
     // GETTER ONLY
     cgp::vec2 position;
+
+    bool is_idling;
 
     // display scale of the worm
     float scale;
@@ -28,8 +31,11 @@ struct Worm {
     // in cgp and segfault yeepee
     Worm();
 
-    // Return position (x, y) after a given idle time
-    vec2 idle(float idle_timer, Ground ground, float speed);
+    // Return position (x, y, angle) after a given idle time
+    vec3 idle(float idle_timer, Ground ground, float speed);
+
+    // When having a target return (x, y, angle)
+    vec3 worm_position_orientation(float v, vec2 cible);
 
     void set_position(float x, float y, Ground ground);
 };
