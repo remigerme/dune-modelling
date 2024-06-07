@@ -9,6 +9,7 @@ using cgp::mesh;
 using cgp::mesh_drawable;
 using cgp::numarray;
 using cgp::timer_basic;
+using cgp::vec2;
 using cgp::vec3;
 
 // Variables associated to the GUI (buttons, etc)
@@ -38,6 +39,7 @@ struct scene_structure : cgp::scene_inputs_generic {
     /************************************/
 
     timer_basic timer;
+    float idle_timer_beginning;
     Ground ground;
     Cliff cliff;
     Marteleur marteleur;
@@ -45,6 +47,7 @@ struct scene_structure : cgp::scene_inputs_generic {
     float marteleur_xy[2];
     WormDust worm_dust;
     Worm worm;
+    vec2 wtarget;
 
     /*************/
     /* Functions */
