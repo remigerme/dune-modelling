@@ -3,26 +3,8 @@
 
 using namespace cgp;
 
-vec3 worm_position_orientation(float v, float time, vec2 coor, vec2 cible) {
-    // on rend dans l'ordre la nouvelle position selon x, la nouvelle position
-    // selon y , et l'angle d'orientation du ver
-    float dt = 0.1;
-    float distance_mvt = dt * v;
-    float x0 = cible[0] - coor[0];
-    float y0 = cible[1] - coor[1];
-    float distance = sqrt(x0 * x0 + y0 * y0);
-    float dX = ((rand() % 100) - 50) / 100.0f;
-    float dY = ((rand() % 100) - 50) / 100.0f;
-
-    vec2 direction = {x0 + dX * distance / 10, y0 + dY * distance / 10};
-    float d = sqrt(direction[0] * direction[0] + direction[1] * direction[1]);
-    float coeff_homo = distance_mvt / d;
-    float alpha = atan(direction[1] / direction[0]);
-
-    vec3 new_pos = {coor[0] + coeff_homo * direction[0],
-                    coor[1] + coeff_homo * direction[1], alpha};
-
-    return new_pos;
+float dist(vec2 a, vec2 b) {
+    return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2));
 }
 
 void scene_structure::initialize() {
@@ -44,9 +26,10 @@ void scene_structure::initialize() {
     float ground_uv_range = 3; // used for repetition of the texture
     ground = Ground(ground_scale, ground_uv_range);
     // Load a shader from a file
-    ground.ground_drawable.shader.load(
-        project::path + "shaders/ground/thumper.vert.glsl",
-        project::path + "shaders/mesh/mesh.frag.glsl");
+    // Unfortunately no time to fix the shader
+    // ground.ground_drawable.shader.load(
+    //     project::path + "shaders/ground/thumper.vert.glsl",
+    //    project::path + "shaders/mesh/mesh.frag.glsl");
 
     // Terrain : the surrounding cliff
     vec3 cliff_scale = vec3{200, 200, 250}; // scaling factor
@@ -79,26 +62,58 @@ void scene_structure::display_frame() {
     // Updating variables
     timer.update();
 
+    float dist_eps = 0.5f;
+
+    float xm = marteleur_xy[0];
+    float ym = marteleur_xy[1];
+
+    if (marteleur_status) {
+        worm.is_idling = false;
+        // if we are close the thumper
+        if (dist(worm.position, vec2{xm, ym}) < dist_eps) {
+            marteleur_status = false;
+            wtarget = worm.idle(0, ground, 1); // set target to fixed point
+        } else {
+            wtarget = {xm, ym};
+        }
+    } else {
+        // if we are close worm target (ie fixed point on idle)
+        if (dist(worm.position, wtarget) < dist_eps) {
+            worm.is_idling = true;
+        }
+    }
+
+    if (!worm.is_idling)
+        idle_timer_beginning = timer.t;
+
+    // Updating worm
+    vec3 pw;
+    float aw;
+    if (worm.is_idling) {
+        float idle_timer = timer.t - idle_timer_beginning;
+        vec2 posw = worm.idle(idle_timer, ground, 1);
+        pw = {posw.x, posw.y, ground.get_height(posw.x, posw.y)};
+    } else {
+        vec3 pw_ = worm.worm_position_orientation(3, wtarget);
+        aw = pw_.z;
+        pw = {pw_.x, pw_.y, ground.get_height(pw_.x, pw_.y)};
+    }
+
+    worm.set_position(pw.x, pw.y, ground);
+    worm.worm["worm_body"].transform_local.set_rotation(
+        rotation_transform::from_axis_angle({0, 0, 1}, aw));
+    worm.worm.update_local_to_global_coordinates();
+
     // Updating thumper
     marteleur.marteleur["haut"].transform_local.translation = {
         0, 0, 0.85 + std::max(0.15, 0.4 * cos(timer.t) * cos(timer.t))};
     marteleur.set_position(marteleur_xy, ground);
     marteleur.marteleur.update_local_to_global_coordinates();
 
-    // Updating worm
-    vec3 pw_ =
-        worm_position_orientation(1, timer.t, worm.position, vec2{100, 100});
-    float aw = pw_.z;
-    vec3 pw = {pw_.x, pw_.y, ground.get_height(pw_.x, pw_.y)};
-    worm.set_position(pw.x, pw.y, ground);
-    worm.worm["worm_body"].transform_local.set_rotation(
-        rotation_transform::from_axis_angle({0, 0, 1}, aw));
-    worm.worm.update_local_to_global_coordinates();
-
     // Passing uniform variables to shaders
     environment.uniform_generic.uniform_float["time"] = timer.t;
-    environment.uniform_generic.uniform_float["xm"] = marteleur_xy[0];
-    environment.uniform_generic.uniform_float["ym"] = marteleur_xy[1];
+    environment.uniform_generic.uniform_float["xm"] = xm;
+    environment.uniform_generic.uniform_float["ym"] = ym;
     environment.uniform_generic.uniform_float["statusm"] = marteleur_status;
     environment.uniform_generic.uniform_vec3["pos_worm"] = pw;
     environment.uniform_generic.uniform_float["angle_worm"] = aw;
