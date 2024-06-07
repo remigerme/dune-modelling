@@ -5,6 +5,7 @@
 
 using cgp::hierarchy_mesh_drawable;
 using cgp::mesh;
+using cgp::vec2;
 
 struct Worm {
     // DO NOT USE TO SET POSITION
@@ -26,6 +27,9 @@ struct Worm {
     // else is called before some initialization stuff
     // in cgp and segfault yeepee
     Worm();
+
+    // Return position (x, y) after a given idle time
+    vec2 idle(float idle_timer, Ground ground, float speed);
 
     void set_position(float x, float y, Ground ground);
 };

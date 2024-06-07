@@ -195,3 +195,10 @@ void Worm::set_position(float x, float y, Ground ground) {
     worm["worm_body"].transform_local.translation = {x, y, z};
     position = {x, y};
 }
+
+vec2 Worm::idle(float idle_timer, Ground ground, float speed) {
+    float t = idle_timer * speed;
+    float xt = cos(t) + 0.5 * cos(2 * t);
+    float yt = sin(t) + cos(t);
+    return vec2{xt, yt};
+}
