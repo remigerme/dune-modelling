@@ -88,10 +88,11 @@ void scene_structure::display_frame() {
 
     // Updating worm
     vec3 pw;
-    float aw;
+    float aw = 0;
     if (worm.is_idling) {
         float idle_timer = timer.t - idle_timer_beginning;
-        vec2 posw = worm.idle(idle_timer, ground, 1);
+        vec3 posw = worm.idle(idle_timer, ground, 0.1f);
+        aw = posw.z;
         pw = {posw.x, posw.y, ground.get_height(posw.x, posw.y)};
     } else {
         vec3 pw_ = worm.worm_position_orientation(3, wtarget);
