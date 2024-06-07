@@ -201,7 +201,13 @@ vec3 Worm::idle(float idle_timer, Ground ground, float speed) {
     float t = idle_timer * speed;
     float xt = 65 * (cos(t) + 0.5 * cos(2 * t));
     float yt = 65 * (sin(t) + cos(t));
-    float angle = 0;
+
+    // Derivatives
+    float dxt = 65 * (-sin(t) - sin(2 * t));
+    float dyt = 65 * (cos(t) - sin(t));
+    // Calculate angle using atan2
+    float angle = atan2(dyt, dxt);
+
     return vec3{xt, yt, angle};
 }
 
