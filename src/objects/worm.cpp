@@ -197,14 +197,14 @@ void Worm::set_position(float x, float y, Ground ground) {
 }
 
 vec3 Worm::idle(float idle_timer, Ground ground, float speed) {
-    // Warning : hard-coded amplitude
+    float amplitude = ground.ground_scale.x / 3;
     float t = idle_timer * speed;
-    float xt = 65 * (cos(t) + 0.5 * cos(2 * t));
-    float yt = 65 * (sin(t) + cos(t));
+    float xt = amplitude * (cos(t) + 0.5 * cos(2 * t));
+    float yt = amplitude * (sin(t) + cos(t));
 
     // Derivatives
-    float dxt = 65 * (-sin(t) - sin(2 * t));
-    float dyt = 65 * (cos(t) - sin(t));
+    float dxt = amplitude * (-sin(t) - sin(2 * t));
+    float dyt = amplitude * (cos(t) - sin(t));
     // Calculate angle using atan2
     float angle = atan2(dyt, dxt);
 
