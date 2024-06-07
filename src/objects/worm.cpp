@@ -199,8 +199,8 @@ void Worm::set_position(float x, float y, Ground ground) {
 vec3 Worm::idle(float idle_timer, Ground ground, float speed) {
     // Warning : hard-coded amplitude
     float t = idle_timer * speed;
-    float xt = 100 * (cos(t) + 0.5 * cos(2 * t));
-    float yt = 100 * (sin(t) + cos(t));
+    float xt = 65 * (cos(t) + 0.5 * cos(2 * t));
+    float yt = 65 * (sin(t) + cos(t));
     float angle = 0;
     return vec3{xt, yt, angle};
 }
