@@ -196,9 +196,28 @@ void Worm::set_position(float x, float y, Ground ground) {
     position = {x, y};
 }
 
-vec2 Worm::idle(float idle_timer, Ground ground, float speed) {
+vec3 Worm::idle(float idle_timer, Ground ground, float speed) {
     float t = idle_timer * speed;
     float xt = cos(t) + 0.5 * cos(2 * t);
     float yt = sin(t) + cos(t);
-    return vec2{xt, yt};
+    float angle = 0;
+    return vec3{xt, yt, angle};
+}
+
+vec3 Worm::worm_position_orientation(float v, vec2 cible) {
+    // on rend dans l'ordre la nouvelle position selon x, la nouvelle position
+    // selon y , et l'angle d'orientation du ver
+    float dt = 0.1;
+    float distance_mvt = dt * v;
+    float x0 = cible[0] - position[0];
+    float y0 = cible[1] - position[1];
+    float distance = sqrt(x0 * x0 + y0 * y0);
+
+    float d = sqrt(x0 * x0 + y0 * y0);
+    float coef_homo = distance_mvt / d;
+    float alpha = atan(y0 / x0);
+
+    vec3 new_pos = {position[0] + coef_homo * x0, position[1] + coef_homo * y0,
+                    alpha};
+    return new_pos;
 }
