@@ -14,7 +14,7 @@ Make sure you have [cmake](https://cmake.org/download/) installed on your machin
 
 If you're using Linux, there is no setup. Just debug with the `Debug project with new files` configuration.
 
-If you're using macOS, you need to replace `gdb` by `lldb` in `.vscode/launch.json`. Then debug.
+If you're using **macOS, you need to replace `gdb` by `lldb` in `.vscode/launch.json`.** Then debug.
 
 ## Setup and run (without VSCode)
 
