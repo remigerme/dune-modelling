@@ -218,11 +218,10 @@ vec3 Worm::worm_position_orientation(float v, vec2 cible) {
     float distance_mvt = dt * v;
     float x0 = cible[0] - position[0];
     float y0 = cible[1] - position[1];
-    float distance = sqrt(x0 * x0 + y0 * y0);
 
     float d = sqrt(x0 * x0 + y0 * y0);
     float coef_homo = distance_mvt / d;
-    float alpha = atan(y0 / x0);
+    float alpha = atan2(y0, x0);
 
     vec3 new_pos = {position[0] + coef_homo * x0, position[1] + coef_homo * y0,
                     alpha};
